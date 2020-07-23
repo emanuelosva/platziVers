@@ -4,6 +4,7 @@
   "description": "platziverse db module",
   "main": "index.js",
   "scripts": {
+    "setup": "DEBUG=platziverse:* node setup.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -16,6 +17,9 @@
     "eslint-plugin-import": "^2.22.0"
   },
   "dependencies": {
+    "chalk": "^4.1.0",
+    "debug": "^4.1.1",
+    "inquirer": "^7.3.3",
     "pg": "^8.3.0",
     "pg-hstore": "^2.3.3",
     "sequelize": "^6.3.3"
