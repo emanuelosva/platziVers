@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "setup": "DEBUG=platziverse:* node setup.js",
-    "test": "DEBUG=platziverse:* nyc --reporter=html ava",
+    "test": "ava --verbose",
+    "test:coverage": "nyc npm run test",
     "test:report": "sensible-browser coverage/index.html",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"

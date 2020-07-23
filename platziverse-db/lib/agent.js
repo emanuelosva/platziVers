@@ -21,8 +21,34 @@ module.exports = function agentService(AgentModel) {
     return result.toJSON();
   };
 
+  function findByUuid(uuid) {
+    return AgentModel.findOne({
+      where: { uuid },
+    });
+  };
+
+  function findAll() {
+    return AgentModel.findAll();
+  };
+
+  function findByUsername(username) {
+    return AgentModel.findAll({
+      where: { username, connected: true },
+    });
+  };
+
+  function findConnected() {
+    return AgentModel.findAll({
+      where: { connected: true },
+    });
+  };
+
   return {
+    findAll,
     findById,
+    findByUuid,
+    findByUsername,
+    findConnected,
     createOrUpdate,
   };
 };
