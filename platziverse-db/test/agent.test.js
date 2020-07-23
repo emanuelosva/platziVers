@@ -16,8 +16,11 @@ const MetricStub = {
   belongsTo: sinon.spy(),
 };
 
-// const single = { ...agentFixtures.single };
 const id = 1;
+const single = { ...agentFixtures.single };
+const newAgent = agentFixtures.extend(single, { id: 20, uuid: 'yyy-ycv' });
+const query = { where: { uuid: single.uuid } };
+const queryNewAgent = { where: { uuid: newAgent.uuid } };
 
 test.beforeEach(async () => {
   sandbox = sinon.createSandbox();
@@ -25,11 +28,31 @@ test.beforeEach(async () => {
     hasMany: sandbox.spy(),
   };
 
-  // Function Stibs
+  // Model Stub findByID
   AgentStub.findById = sandbox.stub();
   AgentStub.findById
     .withArgs(id)
     .returns(Promise.resolve(agentFixtures.byId(id)));
+
+  // Model Stub findOne
+  AgentStub.findOne = sandbox.stub();
+  AgentStub.findOne
+    .withArgs(query)
+    .returns(Promise.resolve(single))
+    .withArgs(queryNewAgent)
+    .returns(Promise.resolve(null));
+
+  // Model Stub update
+  AgentStub.update = sandbox.stub();
+  AgentStub.update
+    .withArgs(single, query)
+    .returns(Promise.resolve(1));
+
+  // Model Stub update
+  AgentStub.create = sandbox.stub();
+  AgentStub.create
+    .withArgs(newAgent)
+    .returns(Promise.resolve({ ...newAgent, toJSON: () => newAgent }));
 
   const setupDatabse = proxyquire('../index', {
     './models/agent': () => AgentStub,
@@ -56,8 +79,28 @@ test.serial('Setup db', (t) => {
 
 test.serial('Agent#findById', async (t) => {
   const agent = await db.Agent.findById(id);
+
   t.true(AgentStub.findById.called, 'findById method is called');
   t.true(AgentStub.findById.calledOnce, 'findById method is called only one time');
   t.true(AgentStub.findById.calledWith(id), 'findById method is called with correct args');
   t.deepEqual(agent, agentFixtures.byId(id), 'should be the same');
+});
+
+test.serial('Agent#createOrUpdate - existing', async (t) => {
+  const agent = await db.Agent.createOrUpdate(single);
+
+  t.true(AgentStub.findOne.called, 'find one is called');
+  t.true(AgentStub.findOne.calledTwice, 'find one should be called 2 times');
+  t.true(AgentStub.update.calledOnce, 'update should be called one times');
+  t.deepEqual(agent, single, 'agent should be the same');
+});
+
+test.serial('Agent#createOrUpdate - new agent', async (t) => {
+  const createdAgent = await db.Agent.createOrUpdate(newAgent);
+
+  t.true(AgentStub.findOne.called, 'find one is called');
+  t.true(AgentStub.findOne.calledOnce, 'find one is called');
+  t.true(AgentStub.create.called, 'create is called');
+  t.true(AgentStub.create.calledOnce, 'create should be called one time');
+  t.deepEqual(createdAgent, newAgent, 'createdAgent should be equal to new agent');
 });

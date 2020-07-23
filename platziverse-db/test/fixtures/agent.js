@@ -35,4 +35,5 @@ module.exports = {
   platzi: agentsArray.filter((item) => item.username === 'platzi'),
   byUuid: (id) => agentsArray.filter((item) => item.uuid === id).shift(),
   byId: (id) => agentsArray.filter((item) => item.id === id).shift(),
+  extend,
 };
