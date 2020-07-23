@@ -21,6 +21,10 @@ const single = { ...agentFixtures.single };
 const newAgent = agentFixtures.extend(single, { id: 20, uuid: 'yyy-ycv' });
 const query = { where: { uuid: single.uuid } };
 const queryNewAgent = { where: { uuid: newAgent.uuid } };
+const queryUuid = { where: { uuid: single.uuid } };
+const username = 'platzi';
+const queryUsername = { where: { username, connected: true } };
+const queryConnected = { where: { connected: true } };
 
 test.beforeEach(async () => {
   sandbox = sinon.createSandbox();
@@ -40,7 +44,9 @@ test.beforeEach(async () => {
     .withArgs(query)
     .returns(Promise.resolve(single))
     .withArgs(queryNewAgent)
-    .returns(Promise.resolve(null));
+    .returns(Promise.resolve(null))
+    .withArgs(queryUuid)
+    .returns(single);
 
   // Model Stub update
   AgentStub.update = sandbox.stub();
@@ -53,6 +59,16 @@ test.beforeEach(async () => {
   AgentStub.create
     .withArgs(newAgent)
     .returns(Promise.resolve({ ...newAgent, toJSON: () => newAgent }));
+
+  // Model Find All
+  AgentStub.findAll = sandbox.stub();
+  AgentStub.findAll
+    .withArgs()
+    .returns(Promise.resolve(agentFixtures.all))
+    .withArgs(queryUsername)
+    .returns(Promise.resolve(agentFixtures.connected))
+    .withArgs(queryConnected)
+    .returns(Promise.resolve(agentFixtures.connected));
 
   const setupDatabse = proxyquire('../index', {
     './models/agent': () => AgentStub,
@@ -103,4 +119,36 @@ test.serial('Agent#createOrUpdate - new agent', async (t) => {
   t.true(AgentStub.create.called, 'create is called');
   t.true(AgentStub.create.calledOnce, 'create should be called one time');
   t.deepEqual(createdAgent, newAgent, 'createdAgent should be equal to new agent');
+});
+
+test.serial('Agent#findByUuid', async (t) => {
+  const agent = await db.Agent.findByUuid(single.uuid);
+
+  t.true(AgentStub.findOne.called, 'find one is called');
+  t.true(AgentStub.findOne.calledOnce, 'find one is called');
+  t.deepEqual(agent, single, 'agent should be equal to single');
+});
+
+test.serial('Agent#findAll', async (t) => {
+  const agents = await db.Agent.findAll();
+
+  t.true(AgentStub.findAll.called, 'find all is called');
+  t.true(AgentStub.findAll.calledOnce, 'find all is called');
+  t.deepEqual(agents, agentFixtures.all, 'should return all agents');
+});
+
+test.serial('Agent#findByUsername', async (t) => {
+  const agents = await db.Agent.findByUsername(username);
+
+  t.true(AgentStub.findAll.called, 'find all is called');
+  t.true(AgentStub.findAll.calledOnce, 'find all is called');
+  t.deepEqual(agents, agentFixtures.connected, 'should return all agents connected (All are "platzi")');
+});
+
+test.serial('Agent#findConnected', async (t) => {
+  const agents = await db.Agent.findConnected();
+
+  t.true(AgentStub.findAll.called, 'find all is called');
+  t.true(AgentStub.findAll.calledOnce, 'find all is called');
+  t.deepEqual(agents, agentFixtures.connected, 'should return all agents connected');
 });
