@@ -7,6 +7,9 @@ const db = require('./index');
 
 const prompt = inquirer.createPromptModule();
 
+// Execute script with flags
+const [flagYes] = process.argv.slice(2) || null;
+
 const handleFatalError = (err) => {
   debug(chalk.redBright(err.message));
   console.error(err.stack);
@@ -14,16 +17,19 @@ const handleFatalError = (err) => {
 };
 
 const setup = async () => {
-  const answer = await prompt([
-    {
-      type: 'confirm',
-      name: 'setup',
-      message: 'This will distroy your databse, are you sure?',
-    },
-  ]);
+  const yesFlagExecute = (flagYes === '--yes' || flagYes === '-y');
+  if (!yesFlagExecute) {
+    const answer = await prompt([
+      {
+        type: 'confirm',
+        name: 'setup',
+        message: 'This will distroy your databse, are you sure?',
+      },
+    ]);
 
-  if (!answer.setup) {
-    return debug(chalk.greenBright('Your db is safe :) '));
+    if (!answer.setup) {
+      return debug(chalk.greenBright('Your db is safe :) '));
+    }
   }
 
   const config = {
