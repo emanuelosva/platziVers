@@ -5,7 +5,7 @@ const net = require('net');
 const aedes = require('aedes');
 const redisPersistance = require('aedes-persistence-redis');
 const chalk = require('chalk');
-const db = require('platziverse-db');
+const { db, setupConfig } = require('platziverse-db');
 
 const logger = (title, body) => {
   debug(chalk.greenBright(title), body || '');
@@ -19,15 +19,7 @@ const handleFatalError = (err) => {
 
 // --- Config ---
 const PORT = 1883;
-const CONFIG = {
-  database: process.env.DB_NAME || 'platziverse',
-  username: process.env.DB_USER || 'platzi',
-  password: process.env.DB_PASSWORD || 'platzi',
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || '5432',
-  dialect: 'postgres',
-  logging: (s) => debug(s),
-};
+const CONFIG = { ...setupConfig };
 
 // --- Server ---
 const aedesServer = aedes({

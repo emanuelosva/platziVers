@@ -7,7 +7,7 @@ const setupMetricModel = require('./models/metric');
 const agentService = require('./lib/agent');
 const metricService = require('./lib/metric');
 
-module.exports = async (config) => {
+const platziverseDb = async (config) => {
   const configDb = defaults(config, {
     dialect: 'sqlite',
     pool: {
@@ -43,4 +43,19 @@ module.exports = async (config) => {
     Agent,
     Metric,
   };
+};
+
+const setupConfig = {
+  database: process.env.DB_NAME || 'platziverse',
+  username: process.env.DB_USER || 'platzi',
+  password: process.env.DB_PASSWORD || 'platzi',
+  host: process.env.DB_HOST || 'localhost',
+  port: process.env.DB_PORT || '5432',
+  dialect: 'postgres',
+  logging: (s) => debug(s),
+};
+
+module.exports = {
+  db: platziverseDb,
+  setupConfig,
 };
