@@ -222,7 +222,13 @@
     "operator-assignment": 0,
     "operator-linebreak": [
       2,
-      "after"
+      "after",
+      {
+        "overrides": {
+          "?": "before",
+          ":": "before"
+        }
+      }
     ],
     "padded-blocks": 0,
     "prefer-const": 2,
