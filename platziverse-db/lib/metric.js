@@ -5,7 +5,7 @@ module.exports = function metricService(MetricModel, AgentModel) {
   async function findByAgentUuid(agentUuid) {
     const query = {
       attributes: ['type'],
-      gruop: ['type'],
+      group: ['type'],
       inclde: [{
         attributes: [],
         model: AgentModel,
@@ -17,7 +17,7 @@ module.exports = function metricService(MetricModel, AgentModel) {
     return MetricModel.findAll(query);
   };
 
-  async function fundByTypeAgentUuid(type, agentUuid) {
+  async function findByTypeAgentUuid(type, agentUuid) {
     const query = {
       attributes: ['id', 'type', 'value', 'createdAt'],
       where: { type },
@@ -50,7 +50,7 @@ module.exports = function metricService(MetricModel, AgentModel) {
 
   return {
     findByAgentUuid,
-    fundByTypeAgentUuid,
+    findByTypeAgentUuid,
     create,
   };
 };
