@@ -11,6 +11,14 @@ const agent = new PlatziverseAgent({
 
 agent.connect();
 
+//  Events only for this agent
+agent.on('connected');
+agent.on('diconnected');
+agent.on('message');
+
+// Events for external agents
+agent.on('agent/connected');
+agent.on('agent/disconnected');
 agent.on('agent/message', payload => {
   someActionWithPayload(payload);
 });
