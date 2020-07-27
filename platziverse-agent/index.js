@@ -1,10 +1,14 @@
 'use strict';
 
 const EventEmmiter = require('events');
+const os = require('os');
 const mqtt = require('mqtt');
 const defaults = require('defaults');
 const uuid = require('uuid');
-const { handleError, parsePayload } = require('platziverse-utils');
+const { promisify } = require('util');
+const { handleError, parsePayload, createLogger } = require('platziverse-utils');
+
+const logger = createLogger('platziverse:agent');
 
 // --- Options ---
 const defaultOptions = {
@@ -25,6 +29,15 @@ class PlatziverseAgent extends EventEmmiter {
     this._timer = null;
     this._client = null;
     this._agentId = null;
+    this._metrics = new Map();
+  }
+
+  addMetrics(type, fn) {
+    this._metrics.set(type, fn);
+  };
+
+  removeMetric(type) {
+    this._metrics.delete(type);
   }
 
   connect() {
@@ -39,8 +52,39 @@ class PlatziverseAgent extends EventEmmiter {
         this._agentId = uuid.v4();
         this.emit('connected', this._agentId);
 
-        this._timer = setInterval(() => {
-          this.emit('agent/message', 'this is a message');
+        this._timer = setInterval(async () => {
+          let message;
+
+          if (this._metrics.size > 0) {
+            message = {
+              agent: {
+                uuid: this._agentId,
+                username: opts.username,
+                name: opts.name,
+                hostname: os.hostname() || 'localhost',
+                pid: process.pid,
+              },
+              metrics: [],
+              timestamp: new Date().getTime(),
+            };
+          }
+
+          // eslint-disable-next-line no-restricted-syntax
+          for (let [metric, fn] of this._metrics) {
+            if (fn.length === 1) {
+              fn = promisify(fn);
+            }
+
+            message.metrics.push({
+              type: metric,
+              // eslint-disable-next-line no-await-in-loop
+              value: await Promise.resolve(fn()),
+            });
+          }
+
+          logger('Sendig', message);
+          this._client.publish('agent/message', JSON.stringify(message));
+          this.emit('message', message);
         }, opts.interval);
       });
 
@@ -83,7 +127,8 @@ class PlatziverseAgent extends EventEmmiter {
     if (this._started) {
       clearInterval(this._timer);
       this._started = false;
-      this.emit('disconnected');
+      this.emit('disconnected', this._agentId);
+      this._client.end();
     }
   };
 };
