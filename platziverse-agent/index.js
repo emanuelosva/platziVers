@@ -32,7 +32,7 @@ class PlatziverseAgent extends EventEmmiter {
     this._metrics = new Map();
   }
 
-  addMetrics(type, fn) {
+  addMetric(type, fn) {
     this._metrics.set(type, fn);
   };
 
