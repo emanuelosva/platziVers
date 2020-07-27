@@ -12,8 +12,16 @@
     "lint:fix": "eslint . --fix"
   },
   "keywords": [],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emanuelosva/platziVers.git"
+  },
+  "author": "Emanuel Osorio <emanuelosva@gmail.com>",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emanuelosva/platziVers/issues"
+  },
+  "homepage": "https://github.com/emanuelosva/platziVers#readme",
   "devDependencies": {
     "ava": "^3.10.1",
     "eslint": "^7.5.0",
