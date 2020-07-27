@@ -37,8 +37,12 @@ agent.on('message', handlerEvent);
 agent.on('agent/connected', handlerEvent);
 agent.on('agent/disconnected', handlerEvent);
 agent.on('agent/message', payload => {
-  someActionWithPayload(payload);
+  handlerEvent(payload);
 });
+
+function handlerEvent (payload) {
+  console.log(payload);
+};
 
 setTimeout(() => agent.disconnect(), someTime);
 ```
