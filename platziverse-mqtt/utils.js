@@ -9,7 +9,7 @@ const parsePayload = (payload) => {
   try {
     parsedPayload = JSON.parse(parsedPayload);
   } catch (error) {
-    parsedPayload = {};
+    parsedPayload = null;
   }
 
   return parsedPayload;

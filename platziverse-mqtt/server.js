@@ -54,7 +54,6 @@ server.on('listening', async () => {
     const services = await db(CONFIG);
     Agent = services.Agent;
     Metric = services.Metric;
-    console.log(Metric);
     debug('Services connected');
   } catch (error) {
     handleFatalError(error);
@@ -66,8 +65,33 @@ aedesServer.on('client', (client) => {
   clients.set(client.id, null);
 });
 
-aedesServer.on('clientDisconnect', (client) => {
+// eslint-disable-next-line consistent-return
+aedesServer.on('clientDisconnect', async (client) => {
   logger('Client disconnected: id->', client.id);
+  const agent = clients.get(client.id);
+
+  if (agent) {
+    // Mark agent as Disconnected
+    agent.connected = false;
+    try {
+      await Agent.createOrUpdate(agent);
+    } catch (error) {
+      return handleError(error);
+    }
+
+    // Delete Agent from Client list
+    clients.delete(client.id);
+    aedesServer.publish({
+      topic: 'agent/disconnected',
+      payload: JSON.stringify({
+        agent: {
+          uuid: agent.uuid,
+        },
+      }),
+    });
+
+    logger('Client market as disconnected. Id:', agent.uuid);
+  }
 });
 
 // eslint-disable-next-line consistent-return
@@ -110,6 +134,20 @@ aedesServer.on('publish', async (packet, client) => {
               },
             }),
           });
+        }
+
+        // Store Metrics
+        // eslint-disable-next-line no-restricted-syntax
+        for (const metric of payload.metrics) {
+          let _metric;
+          try {
+            // eslint-disable-next-line no-await-in-loop
+            _metric = await Metric.create(agent.uuid, metric);
+          } catch (error) {
+            return handleError(error);
+          }
+
+          logger(`Metric ${_metric.id} saved on agent ${agent.uuid}`);
         }
       }
       break;
