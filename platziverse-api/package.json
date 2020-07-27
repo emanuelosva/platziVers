@@ -1,0 +1,35 @@
+{
+  "name": "platziverse-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A simple IoT Plataform - API",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "NODE_ENV=production node src/bin/www",
+    "dev": "DEBUG=platziverse:* NODE_ENV=development nodemon src/bin/www",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emanuelosva/platziVers.git"
+  },
+  "author": "Emanuel Osorio <emanuelosva@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emanuelosva/platziVers/issues"
+  },
+  "homepage": "https://github.com/emanuelosva/platziVers#readme",
+  "dependencies": {
+    "debug": "^4.1.1",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "platziverse-utils": "file:../platziverse-utils"
+  },
+  "devDependencies": {
+    "eslint": "^7.5.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "nodemon": "^2.0.4"
+  }
+}
