@@ -4,24 +4,10 @@ const debug = require('debug')('platziverse:mqtt');
 const net = require('net');
 const aedes = require('aedes');
 const redisPersistance = require('aedes-persistence-redis');
-const chalk = require('chalk');
 const { db, setupConfig } = require('platziverse-db');
-const { parsePayload } = require('./utils');
+const { parsePayload, handleError, createLogger } = require('platziverse-utils');
 
-const logger = (title, body) => {
-  debug(chalk.greenBright(title), body || '');
-};
-
-const handleFatalError = (err) => {
-  console.error(chalk.redBright(err.message));
-  console.error(err.stack);
-  process.exit(1);
-};
-
-const handleError = (err) => {
-  console.error(chalk.redBright(err.message));
-  console.error(err.stack);
-};
+const logger = createLogger('platziverse:mqtt');
 
 // --- Config ---
 const PORT = 1883;
@@ -39,7 +25,7 @@ const aedesServer = aedes({
 
 const server = net.createServer(aedesServer.handle);
 server.listen(PORT, (err) => {
-  if (err) handleFatalError(err);
+  if (err) handleError.fatal(err);
   else logger('Server is running');
 });
 
@@ -54,9 +40,9 @@ server.on('listening', async () => {
     const services = await db(CONFIG);
     Agent = services.Agent;
     Metric = services.Metric;
-    debug('Services connected');
+    logger('Services connected');
   } catch (error) {
-    handleFatalError(error);
+    handleError.fatal(error);
   }
 });
 
@@ -76,7 +62,7 @@ aedesServer.on('clientDisconnect', async (client) => {
     try {
       await Agent.createOrUpdate(agent);
     } catch (error) {
-      return handleError(error);
+      return handleError.log(error);
     }
 
     // Delete Agent from Client list
@@ -114,7 +100,7 @@ aedesServer.on('publish', async (packet, client) => {
         try {
           agent = await Agent.createOrUpdate(payload.agent);
         } catch (error) {
-          return handleError(error);
+          return handleError.log(error);
         }
 
         logger('Agent saved. uuid:', agent.uuid);
@@ -147,7 +133,7 @@ aedesServer.on('publish', async (packet, client) => {
               logger(`Metric ${_metric.id} saved on agent ${agent.uuid}`);
             });
         } catch (error) {
-          handleError(error);
+          handleError.log(error);
         }
       }
       break;
@@ -159,7 +145,7 @@ aedesServer.on('publish', async (packet, client) => {
 });
 
 // Error handling
-aedesServer.on('clientError', (err) => handleFatalError(err));
-aedesServer.on('connectionError', (err) => handleFatalError(err));
-process.on('uncaughtException', handleFatalError);
-process.on('unhandledRejection', handleFatalError);
+aedesServer.on('clientError', (err) => handleError.fatal(err));
+aedesServer.on('connectionError', (err) => handleError.fatal(err));
+process.on('uncaughtException', handleError.fatal);
+process.on('unhandledRejection', handleError.fatal);
