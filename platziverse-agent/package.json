@@ -1,0 +1,26 @@
+{
+  "name": "platziverse-agent",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A Simple IoT Plataform - Agent",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emanuelosva/platziVers.git"
+  },
+  "author": "Emanuel Osorio <emanuelosva@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emanuelosva/platziVers/issues"
+  },
+  "homepage": "https://github.com/emanuelosva/platziVers#readme",
+  "devDependencies": {
+    "eslint": "^7.5.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0"
+  }
+}
