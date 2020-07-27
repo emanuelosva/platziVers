@@ -3,7 +3,7 @@
 const debug = require('debug')('platziverse:db:setup');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
-const db = require('./index');
+const { db } = require('./index');
 
 const prompt = inquirer.createPromptModule();
 

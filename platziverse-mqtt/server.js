@@ -137,17 +137,17 @@ aedesServer.on('publish', async (packet, client) => {
         }
 
         // Store Metrics
-        // eslint-disable-next-line no-restricted-syntax
-        for (const metric of payload.metrics) {
-          let _metric;
-          try {
-            // eslint-disable-next-line no-await-in-loop
-            _metric = await Metric.create(agent.uuid, metric);
-          } catch (error) {
-            return handleError(error);
-          }
+        try {
+          const metricsPromises = payload.metrics
+            .map((metric) => Metric.create(agent.uuid, metric));
 
-          logger(`Metric ${_metric.id} saved on agent ${agent.uuid}`);
+          Promise
+            .all(metricsPromises)
+            .then((_metric) => {
+              logger(`Metric ${_metric.id} saved on agent ${agent.uuid}`);
+            });
+        } catch (error) {
+          handleError(error);
         }
       }
       break;
