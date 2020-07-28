@@ -1,5 +1,8 @@
 const express = require('express');
 const response = require('../middlewares/response');
+const ApiServices = require('../services');
+
+const apiService = new ApiServices();
 
 // --- API router ---
 const api = express.Router();
@@ -7,8 +10,13 @@ const api = express.Router();
 /**
  * @abstract Response with all connected agents
  */
-api.get('/agents', (req, res, next) => {
-  response.success(req, res, 200, {}, 'agents list');
+api.get('/agents', async (req, res, next) => {
+  try {
+    const agents = await apiService.findAllAgents();
+    response.success(req, res, 200, agents, 'agents list');
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**
@@ -30,7 +38,11 @@ api.get('/agent/:uuid', (req, res, next) => {
  */
 api.get('/metrics/:uuid', (req, res, next) => {
   const { uuid } = req.params;
-  response.success(req, res, 200, { uuid }, 'metric retrieved');
+  try {
+    response.success(req, res, 200, { uuid }, 'metric retrieved');
+  } catch (error) {
+    next(error);
+  }
 
 });
 
@@ -41,7 +53,11 @@ api.get('/metrics/:uuid', (req, res, next) => {
  */
 api.get('/metrics/:uuid/:type', (req, res, next) => {
   const { uuid, type } = req.params;
-  response.success(req, res, 200, { uuid, type }, 'metric retrieved');
+  try {
+    response.success(req, res, 200, { uuid, type }, 'metric retrieved');
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = api;
