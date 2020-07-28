@@ -23,10 +23,13 @@ api.get('/agents', async (req, res, next) => {
  * @abstract Response with the agent info
  * @param {string} uuid - The agent uuid
  */
-api.get('/agent/:uuid', (req, res, next) => {
+api.get('/agent/:uuid', async (req, res, next) => {
   const { uuid } = req.params;
   try {
-    response.success(req, res, 200, { uuid }, 'agent retrieved');
+    const agent = await apiService.findAgentUuid({ uuid });
+    agent
+      ? response.success(req, res, 200, agent, 'agent retrieved')
+      : response.error(req, res, 404, {}, `Agent Not Found with uuid: ${uuid}`);
   } catch (error) {
     next(error);
   }
@@ -36,14 +39,16 @@ api.get('/agent/:uuid', (req, res, next) => {
  * @abstract Response with all metrics for agent that match the uuid
  * @param {string} uuid - The metric uuid
  */
-api.get('/metrics/:uuid', (req, res, next) => {
+api.get('/metrics/:uuid', async (req, res, next) => {
   const { uuid } = req.params;
   try {
-    response.success(req, res, 200, { uuid }, 'metric retrieved');
+    const metrics = await apiService.findMetricUuid({ uuid });
+    metrics.length
+      ? response.success(req, res, 200, metrics, 'metric retrieved')
+      : response.error(req, res, 404, {}, `Metrics Not Found for agentUui: ${uuid}`);
   } catch (error) {
     next(error);
   }
-
 });
 
 /**
@@ -51,10 +56,13 @@ api.get('/metrics/:uuid', (req, res, next) => {
  * @param {string} uuid - The metric uuid
  * @param {string} type - The metric type
  */
-api.get('/metrics/:uuid/:type', (req, res, next) => {
+api.get('/metrics/:uuid/:type', async (req, res, next) => {
   const { uuid, type } = req.params;
   try {
-    response.success(req, res, 200, { uuid, type }, 'metric retrieved');
+    const metrics = await apiService.findMetricsByTypeUuid({ type, uuid });
+    metrics.length
+      ? response.success(req, res, 200, metrics, 'metric retrieved')
+      : response.error(req, res, 404, {}, `Metrics Not Found for type: ${type} & uuid: ${uuid}`);
   } catch (error) {
     next(error);
   }

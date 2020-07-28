@@ -6,7 +6,7 @@ module.exports = function metricService(MetricModel, AgentModel) {
     const query = {
       attributes: ['type'],
       group: ['type'],
-      inclde: [{
+      include: [{
         attributes: [],
         model: AgentModel,
         where: { uuid: agentUuid },

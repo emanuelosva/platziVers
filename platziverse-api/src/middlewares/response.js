@@ -25,7 +25,7 @@ const success = (req, res, status, data, message) => {
 };
 
 const error = (req, res, status, error, message) => {
-  const statusCode = status || req.statusCode || 500;
+  const statusCode = status || req.statusCode || error.statusCode || 500;
   const statusMessage = message || STATUS_MESSAGE[statusCode] || 'Internall error';
   let errorBody;
 
