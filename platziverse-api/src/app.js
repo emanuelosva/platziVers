@@ -13,7 +13,7 @@ const errorHandler = require('./middlewares/errorHandler');
 const app = express();
 
 // --- App settings ---
-app.use(morgan('tiny'));
+app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
