@@ -17,7 +17,11 @@ api.get('/agents', (req, res, next) => {
  */
 api.get('/agent/:uuid', (req, res, next) => {
   const { uuid } = req.params;
-  response.success(req, res, 200, { uuid }, 'agent retrieved');
+  try {
+    response.success(req, res, 200, { uuid }, 'agent retrieved');
+  } catch (error) {
+    next(error);
+  }
 });
 
 /**

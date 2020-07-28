@@ -7,6 +7,7 @@ const express = require('express');
 const morgan = require('morgan');
 const apiRouter = require('./routes');
 const notFound = require('./middlewares/errorHandlerNotFound');
+const errorHandler = require('./middlewares/errorHandler');
 
 // --- App definition ---
 const app = express();
@@ -23,5 +24,6 @@ app.use('/api', apiRouter);
 app.use(notFound);
 
 // Error handlers
+app.use(errorHandler);
 
 module.exports = app;
