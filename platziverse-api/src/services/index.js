@@ -1,15 +1,23 @@
+/* eslint-disable consistent-return */
 const { handleError } = require('platziverse-utils');
 const Db = require('../lib/db');
 
 const db = new Db();
 
+const connectionDbFailed = (error) => {
+  handleError.log(error);
+  return Promise.reject(new Error('Connection Failed'));
+};
+
 class ApiServices {
   // eslint-disable-next-line class-methods-use-this
   constructor() {
-    db.connect().then((services) => {
-      this.agent = services.Agent;
-      this.metric = services.Metric;
-    });
+    db.connect()
+      .then((services) => {
+        this.agent = services.Agent;
+        this.metric = services.Metric;
+      })
+      .catch(connectionDbFailed);
   }
 
   async findAllAgents() {
@@ -17,8 +25,7 @@ class ApiServices {
       const findedAgents = await this.agent.findAll();
       return findedAgents;
     } catch (error) {
-      handleError.log(error);
-      return Promise.reject(new Error('Connection Failed'));
+      connectionDbFailed(error);
     }
   }
 
@@ -27,8 +34,7 @@ class ApiServices {
       const findedAgent = await this.agent.findByUuid(uuid);
       return findedAgent;
     } catch (error) {
-      handleError.log(error);
-      return Promise.reject(new Error('Connection Failed'));
+      connectionDbFailed(error);
     }
   }
 
@@ -37,8 +43,7 @@ class ApiServices {
       const findedMetrics = await this.metric.findByAgentUuid(uuid);
       return findedMetrics;
     } catch (error) {
-      handleError.log(error);
-      return Promise.reject(new Error('Connection Failed'));
+      connectionDbFailed(error);
     }
   }
 
@@ -47,8 +52,7 @@ class ApiServices {
       const findedMetrics = await this.metric.findByTypeAgentUuid(type, uuid);
       return findedMetrics;
     } catch (error) {
-      handleError.log(error);
-      return Promise.reject(new Error('Connection Failed'));
+      connectionDbFailed(error);
     }
   }
 
