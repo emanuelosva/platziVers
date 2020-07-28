@@ -1,6 +1,9 @@
 const __debug = require('debug');
 const chalk = require('chalk');
 
+const agentServices = require('./mocks/agentService');
+const metricServices = require('./mocks/metricServices');
+
 // Loggers
 const createLogger = (name) => {
   const debug = __debug(name);
@@ -46,4 +49,8 @@ module.exports = {
     log: handleError,
   },
   createLogger,
+  tests: {
+    agentServices,
+    metricServices,
+  }
 };
