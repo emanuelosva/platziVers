@@ -4,7 +4,7 @@ const Db = require('../lib/db');
 
 const db = new Db();
 
-const connectionDbFailed = (error) => {
+const connectionDbFailed = async (error) => {
   handleError.log(error);
   return Promise.reject(new Error('Connection Failed'));
 };
@@ -25,7 +25,7 @@ class ApiServices {
       const findedAgents = await this.agent.findAll();
       return findedAgents;
     } catch (error) {
-      connectionDbFailed(error);
+      await connectionDbFailed(error);
     }
   }
 
@@ -34,7 +34,7 @@ class ApiServices {
       const findedAgent = await this.agent.findByUuid(uuid);
       return findedAgent;
     } catch (error) {
-      connectionDbFailed(error);
+      await connectionDbFailed(error);
     }
   }
 
@@ -43,7 +43,7 @@ class ApiServices {
       const findedMetrics = await this.metric.findByAgentUuid(uuid);
       return findedMetrics;
     } catch (error) {
-      connectionDbFailed(error);
+      await connectionDbFailed(error);
     }
   }
 
@@ -52,7 +52,7 @@ class ApiServices {
       const findedMetrics = await this.metric.findByTypeAgentUuid(type, uuid);
       return findedMetrics;
     } catch (error) {
-      connectionDbFailed(error);
+      await connectionDbFailed(error);
     }
   }
 
