@@ -14,6 +14,17 @@
     // Socket connection
 
     // Socket events
+    socket.on('agent/message', function (payload) {
+      console.log(payload);
+    });
+
+    socket.on('agent/connected', function (payload) {
+      console.log(payload);
+    });
+
+    socket.on('agent/disconnected', function (payload) {
+      console.log(payload);
+    });
     // Socket events
   </script>
 </body>

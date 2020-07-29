@@ -21,6 +21,7 @@
   "dependencies": {
     "chalk": "^4.1.0",
     "express": "^4.17.1",
+    "platziverse-agent": "file:../platziverse-agent",
     "platziverse-utils": "file:../platziverse-utils",
     "socket.io": "^2.3.0"
   },
