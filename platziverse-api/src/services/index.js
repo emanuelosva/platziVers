@@ -20,9 +20,21 @@ class ApiServices {
       .catch(connectionDbFailed);
   }
 
+  async checkAuth({ user, next }) {
+    if (!user || !user.username) {
+      const unauthorized = new Error('Unauthorized');
+      unauthorized.statusCode = 401;
+      return next(unauthorized);
+    }
+    this.user = user;
+  }
+
   async findAllAgents() {
     try {
-      const findedAgents = await this.agent.findAll();
+      let findedAgents;
+      this.user.admin
+        ? findedAgents = await this.agent.findConnected()
+        : findedAgents = await this.agent.findByUsername(this.user.username);
       return findedAgents;
     } catch (error) {
       await connectionDbFailed(error);

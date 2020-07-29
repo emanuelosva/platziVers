@@ -1,16 +1,23 @@
 const express = require('express');
+const authJwt = require('express-jwt');
 const response = require('../middlewares/response');
 const ApiServices = require('../services');
+const config = require('../config');
 
 const apiService = new ApiServices();
 
 // --- API router ---
 const api = express.Router();
 
+// --- Router auth settings (All routes are protected) ---
+api.use(authJwt({ secret: config.auth.secret, algorithms: ['HS256'] }));
+
 /**
  * @abstract Response with all connected agents
  */
 api.get('/agents', async (req, res, next) => {
+  const { user } = req;
+  apiService.checkAuth({ user, next });
   try {
     const agents = await apiService.findAllAgents();
     response.success(req, res, 200, agents, 'agents list');
@@ -25,6 +32,8 @@ api.get('/agents', async (req, res, next) => {
  */
 api.get('/agent/:uuid', async (req, res, next) => {
   const { uuid } = req.params;
+  const { user } = req;
+  apiService.checkAuth({ user, next });
   try {
     const agent = await apiService.findAgentUuid({ uuid });
     agent
@@ -41,6 +50,8 @@ api.get('/agent/:uuid', async (req, res, next) => {
  */
 api.get('/metrics/:uuid', async (req, res, next) => {
   const { uuid } = req.params;
+  const { user } = req;
+  apiService.checkAuth({ user, next });
   try {
     const metrics = await apiService.findMetricUuid({ uuid });
     metrics.length
@@ -58,6 +69,8 @@ api.get('/metrics/:uuid', async (req, res, next) => {
  */
 api.get('/metrics/:uuid/:type', async (req, res, next) => {
   const { uuid, type } = req.params;
+  const { user } = req;
+  apiService.checkAuth({ user, next });
   try {
     const metrics = await apiService.findMetricsByTypeUuid({ type, uuid });
     metrics.length
