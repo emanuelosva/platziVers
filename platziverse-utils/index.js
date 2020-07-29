@@ -40,6 +40,20 @@ const parsePayload = (payload) => {
   return parsedPayload;
 };
 
+const eventPipe = (source, target) => {
+  if (!source.emit || !target.emit) {
+    throw TypeError('Pass only event emitter as arguments');
+  }
+
+  const emit = source._emit = source.emit;
+
+  source.emit = function () {
+    emit.apply(source, arguments);
+    target.emit.apply(target, arguments);
+    return source;
+  };
+};
+
 // General configurations
 
 module.exports = {
@@ -52,5 +66,8 @@ module.exports = {
   tests: {
     agentServices,
     metricServices,
-  }
+  },
+  emiters: {
+    eventPipe,
+  },
 };
