@@ -1,0 +1,32 @@
+{
+  "name": "platziverse-web",
+  "version": "1.0.0",
+  "description": "A simple IoT Plataform - Web Dashboard",
+  "main": "src/server/bin/www",
+  "scripts": {
+    "start": "NODE_ENV=production node src/server/index",
+    "dev": "DEBUG=platziverse:* nodemon src/server/index",
+    "lint": "eslint ./src"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emanuelosva/platziVers.git"
+  },
+  "author": "Emanuel Osorio <emanuelosva@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emanuelosva/platziVers/issues"
+  },
+  "homepage": "https://github.com/emanuelosva/platziVers#readme",
+  "dependencies": {
+    "chalk": "^4.1.0",
+    "express": "^4.17.1",
+    "platziverse-utils": "file:../platziverse-utils"
+  },
+  "devDependencies": {
+    "eslint": "^7.5.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "nodemon": "^2.0.4"
+  }
+}
