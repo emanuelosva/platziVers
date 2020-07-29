@@ -1,7 +1,9 @@
 const express = require('express');
 const authJwt = require('express-jwt');
+const permissions = require('express-jwt-permissions')();
 const response = require('../middlewares/response');
 const ApiServices = require('../services');
+const { scope } = require('../auth');
 const config = require('../config');
 
 const apiService = new ApiServices();
@@ -11,11 +13,12 @@ const api = express.Router();
 
 // --- Router auth settings (All routes are protected) ---
 api.use(authJwt({ secret: config.auth.secret, algorithms: ['HS256'] }));
+const guard = (scope) => permissions.check(scope);
 
 /**
  * @abstract Response with all connected agents
  */
-api.get('/agents', async (req, res, next) => {
+api.get('/agents', guard([scope.agent_read]), async (req, res, next) => {
   const { user } = req;
   apiService.checkAuth({ user, next });
   try {
@@ -30,7 +33,7 @@ api.get('/agents', async (req, res, next) => {
  * @abstract Response with the agent info
  * @param {string} uuid - The agent uuid
  */
-api.get('/agent/:uuid', async (req, res, next) => {
+api.get('/agent/:uuid', guard([scope.metric_read]), async (req, res, next) => {
   const { uuid } = req.params;
   const { user } = req;
   apiService.checkAuth({ user, next });
@@ -48,7 +51,7 @@ api.get('/agent/:uuid', async (req, res, next) => {
  * @abstract Response with all metrics for agent that match the uuid
  * @param {string} uuid - The metric uuid
  */
-api.get('/metrics/:uuid', async (req, res, next) => {
+api.get('/metrics/:uuid', guard([scope.metric_read]), async (req, res, next) => {
   const { uuid } = req.params;
   const { user } = req;
   apiService.checkAuth({ user, next });
@@ -67,7 +70,7 @@ api.get('/metrics/:uuid', async (req, res, next) => {
  * @param {string} uuid - The metric uuid
  * @param {string} type - The metric type
  */
-api.get('/metrics/:uuid/:type', async (req, res, next) => {
+api.get('/metrics/:uuid/:type', guard([scope.metric_read]), async (req, res, next) => {
   const { uuid, type } = req.params;
   const { user } = req;
   apiService.checkAuth({ user, next });
