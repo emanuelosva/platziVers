@@ -1,5 +1,8 @@
 const PlatziverseAgent = require('../index.js');
 
+// Get argument for disconnection
+const [disconnect] = process.argv.slice(2) || null;
+
 const agent = new PlatziverseAgent({
   name: 'myApp',
   username: 'admin',
@@ -39,4 +42,6 @@ agent.on('agent/message', (payload) => {
   handlerEvent(payload);
 });
 
-setTimeout(() => agent.disconnect(), 10000);
+if (disconnect === '--yes') {
+  setTimeout(() => agent.disconnect(), 10000);
+}
