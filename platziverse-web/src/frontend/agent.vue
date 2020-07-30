@@ -12,6 +12,7 @@
         <h3 class="metrics-title">Metrics</h3>
         <metric
           :uuid="uuid"
+          :socket="socket"
           v-for="metric in metrics"
           v-bind:type="metric.type"
           v-bind:key="metric.type"
@@ -77,13 +78,25 @@
 </style>
 
 <script>
+const axios = require("axios").default;
+const moment = require("moment");
+const randomColor = require("random-material-color");
+
+const request = async (url, method) => {
+  const { data, status } = await axios({
+    url,
+    method,
+  });
+  return { data, status };
+};
 module.exports = {
-  props: ["uuid"],
+  props: ["uuid", "socket"],
   data() {
     return {
       name: null,
       hostname: null,
       connected: false,
+      pid: null,
       showMetrics: false,
       error: null,
       metrics: [],
@@ -93,7 +106,45 @@ module.exports = {
     this.initialize();
   },
   methods: {
-    initialize() {},
+    async initialize() {
+      const { uuid } = this;
+      let agent;
+      let res;
+      try {
+        res = await request(`/agent/${uuid}`, "GET");
+        agent = res.data;
+      } catch (error) {
+        error.data
+          ? (this.error = error.data.message)
+          : (this.error = "Internal server error");
+        return;
+      }
+
+      this.name = agent.name;
+      this.hostname = agent.hostname;
+      this.connected = agent.connected;
+      this.pid = agent.pid;
+
+      this.loadMetrics();
+    },
+
+    async loadMetrics() {
+      const { uuid } = this;
+      let res;
+      let metrics;
+      try {
+        res = await request(`/metrics/${uuid}`, "GET");
+        metrics = res.data;
+      } catch (error) {
+        error.data
+          ? (this.error = error.data.message)
+          : (this.error = "Internal server error");
+        return;
+      }
+
+      this.metrics = metrics;
+    },
+
     toggleMetrics() {
       this.showMetrics = this.showMetrics ? false : true;
     },
