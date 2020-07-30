@@ -79,8 +79,6 @@
 
 <script>
 const axios = require("axios").default;
-const moment = require("moment");
-const randomColor = require("random-material-color");
 
 const request = async (url, method) => {
   const { data, status } = await axios({
@@ -143,6 +141,17 @@ module.exports = {
       }
 
       this.metrics = metrics;
+
+      this.startRealtime();
+    },
+
+    startRealtime() {
+      const { uuid, socket } = this;
+      socket.on("agent/disconnected", (payload) => {
+        if (payload.agent.uuid === uuid) {
+          this.connected = false;
+        }
+      });
     },
 
     toggleMetrics() {
