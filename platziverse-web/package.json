@@ -5,7 +5,10 @@
   "main": "src/server/bin/www",
   "scripts": {
     "start": "NODE_ENV=production node src/server/index",
+    "prestart": "npm run build",
     "dev": "DEBUG=platziverse:* nodemon src/server/index",
+    "predev": "npm run build",
+    "build": "browserify -t babelify -t vueify src/frontend/app.js -o src/server/public/bundle.js",
     "lint": "eslint ./src"
   },
   "repository": {
@@ -18,18 +21,41 @@
     "url": "https://github.com/emanuelosva/platziVers/issues"
   },
   "homepage": "https://github.com/emanuelosva/platziVers#readme",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  },
   "dependencies": {
+    "@babel/core": "^7.10.5",
     "axios": "^0.19.2",
     "chalk": "^4.1.0",
+    "chart.js": "^2.9.3",
     "express": "^4.17.1",
+    "moment": "^2.27.0",
     "platziverse-agent": "file:../platziverse-agent",
     "platziverse-utils": "file:../platziverse-utils",
-    "socket.io": "^2.3.0"
+    "random-material-color": "^1.0.5",
+    "socket.io": "^2.3.0",
+    "vue": "^2.6.11",
+    "vue-chartjs": "^3.5.0"
   },
   "devDependencies": {
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^7.3.0",
+    "browserify": "^16.5.1",
     "eslint": "^7.5.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "vueify": "^9.4.1"
   }
 }
