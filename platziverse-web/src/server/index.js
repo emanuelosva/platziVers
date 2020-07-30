@@ -5,6 +5,9 @@ const chalk = require('chalk');
 const { join } = require('path');
 const { handleError, createLogger, emiters } = require('platziverse-utils');
 const PlatziverseAgent = require('platziverse-agent');
+const proxyApi = require('./proxy');
+const notFound = require('./middlewares/errorHandlerNotFound');
+const errorHandler = require('./middlewares/errorHandler');
 
 const port = process.env.PORT || 8080;
 const logger = createLogger('platziverse:web');
@@ -14,9 +17,17 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.disable('x-powered-by');
 
 app.use(express.static(join(__dirname, 'public')));
+
+app.use('/', proxyApi);
+
+// Error handlers
+app.use(notFound);
+app.use(errorHandler);
 // --- Server ---
 
 // --- Mqtt Agent ---

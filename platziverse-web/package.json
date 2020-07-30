@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/emanuelosva/platziVers#readme",
   "dependencies": {
+    "axios": "^0.19.2",
     "chalk": "^4.1.0",
     "express": "^4.17.1",
     "platziverse-agent": "file:../platziverse-agent",
