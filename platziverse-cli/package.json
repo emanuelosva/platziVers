@@ -1,0 +1,30 @@
+{
+  "name": "platziverse-cli",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A simple IoT Plataform - CLI",
+  "bin": "platziverse.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emanuelosva/platziVers.git"
+  },
+  "author": "Emanuel Osorio <emanuelosva@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/emanuelosva/platziVers/issues"
+  },
+  "homepage": "https://github.com/emanuelosva/platziVers#readme",
+  "devDependencies": {
+    "eslint": "^7.5.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0"
+  },
+  "dependencies": {
+    "args": "^5.0.1",
+    "blessed": "^0.1.81",
+    "blessed-contrib": "^4.8.20",
+    "minimist": "^1.2.5",
+    "moment": "^2.27.0",
+    "platziverse-agent": "file:../platziverse-agent"
+  }
+}
