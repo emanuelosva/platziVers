@@ -1,0 +1,9 @@
+---
+- name: Downal git
+  apt:
+    name: git
+    state: present
+- name: Downal essentials
+  apt:
+    name: build-essential
+    state: present

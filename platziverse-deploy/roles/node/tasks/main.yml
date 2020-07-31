@@ -1,0 +1,14 @@
+---
+- name: Downloading Setup Script
+  get_url:
+    url: https://deb.nodesource.com/setup_12.x
+    dest: /tmp/install_node_12.sh
+    mode: u=rx,g=rx,0=rx
+- name: Running Setup Script
+  command: /tmp/install_node_12.sh
+    creates=/etc/apt/sources.list.d/nodesource_12.list
+- name: Install Node.js
+  apt:
+    update_cache: yes
+    state: latest
+    name: nodejs
