@@ -2,7 +2,7 @@
 
 const debug = require('debug')('platziverse:db:example');
 const chalk = require('chalk');
-const db = require('../index');
+const { db } = require('../index');
 
 const handleFatalError = (err) => {
   debug(chalk.redBright(err.message));

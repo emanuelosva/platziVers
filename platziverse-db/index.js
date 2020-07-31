@@ -1,3 +1,5 @@
+/* eslint-disable import/no-extraneous-dependencies */
+
 'use strict';
 
 const defaults = require('defaults');
@@ -6,6 +8,11 @@ const setupAgentModel = require('./models/agent');
 const setupMetricModel = require('./models/metric');
 const agentService = require('./lib/agent');
 const metricService = require('./lib/metric');
+
+if (process.env.NODE_ENV !== 'production') {
+  // eslint-disable-next-line global-require
+  require('longjohn');
+}
 
 const platziverseDb = async (config) => {
   const configDb = defaults(config, {
