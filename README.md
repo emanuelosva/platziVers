@@ -51,10 +51,12 @@ or on the terminal with the package **platziverse-cli**.
 - Frontend framework --- Vue
 - Monitorign --- platziverse-agent (event emitter - mqtt protocol)
 
-### Demo
+## Demo
 
-###### UI - CLI
-<img src="/images/ui-terminal.png" >
+#### UI - CLI
 
-###### UI - WEB
+<img src="/images/ui-terminal.PNG" >
+
+#### UI - WEB
+
 <img src="/images/ui-web.png" >
