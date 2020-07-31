@@ -53,4 +53,8 @@ or on the terminal with the package **platziverse-cli**.
 
 ### Demo
 
-###### Ui web
+###### UI - CLI
+<img src="/images/ui-terminal.png" >
+
+###### UI - WEB
+<img src="/images/ui-web.png" >
