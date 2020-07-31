@@ -46,8 +46,8 @@
     "eslint": "^7.5.0",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.0",
-    "nodemon": "github:mishoo/UglifyJS2#harmony",
-    "uglify-js": "^3.10.0",
+    "nodemon": "^2.0.4",
+    "uglify-js": "github:mishoo/UglifyJS2#harmony",
     "vueify": "^9.4.1"
   }
 }
