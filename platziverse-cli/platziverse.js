@@ -30,6 +30,15 @@ const tree = grid.set(0, 0, 1, 1, contrib.tree, {
   label: 'Connected Agents',
 });
 
+// All extended tree nodes
+let extended = [];
+
+// The selected children tree node
+const selected = {
+  uuid: null,
+  type: null,
+};
+
 // --- Line for chart ---
 const line = grid.set(0, 1, 1, 3, contrib.line, {
   label: 'Metric',
@@ -46,8 +55,33 @@ const line = grid.set(0, 1, 1, 3, contrib.line, {
  ***************************************/
 /***************************************/
 
+const agent = new PlatziverseAgent();
+
+const agents = new Map();
+const agentMetrics = new Map();
+
 // --- Render  agents ---
-function renderData(agents, agentMetrics) {
+// eslint-disable-next-line consistent-return
+function renderMetric() {
+  if (!selected.uuid && !selected.type) {
+    line.setData([{ x: [], y: [], title: '' }]);
+    screen.render();
+    return true;
+  }
+
+  const metrics = agentMetrics.get(selected.uuid);
+  const values = metrics[selected.type];
+  const series = [{
+    title: selected.type,
+    x: values.map((v) => v.timestamp).slice(-10),
+    y: values.map((v) => v.value).slice(-10),
+  }];
+
+  line.setData(series);
+  screen.render();
+}
+
+function renderData() {
   const treeData = {};
 
   // eslint-disable-next-line no-restricted-syntax
@@ -56,6 +90,7 @@ function renderData(agents, agentMetrics) {
     treeData[title] = {
       uuid,
       agent: true,
+      extended: extended.includes(uuid),
       children: {},
     };
 
@@ -66,7 +101,7 @@ function renderData(agents, agentMetrics) {
         type,
         metric: true,
       };
-      const metricName = ` ${type}`;
+      const metricName = ` ${type}  ${' '.repeat(1000)} ${Date.now()} `;
       treeData[title].children[metricName] = metric;
     });
   }
@@ -76,7 +111,7 @@ function renderData(agents, agentMetrics) {
     children: treeData,
   });
 
-  screen.render();
+  renderMetric();
 };
 /**************************************/
 /**************************************/
@@ -85,10 +120,6 @@ function renderData(agents, agentMetrics) {
  * Agent and Metric structures
  **************************************/
 /**************************************/
-const agent = new PlatziverseAgent();
-
-const agents = new Map();
-const agentMetrics = new Map();
 
 // --- Events ---
 agent.on('agent/connected', (payload) => {
@@ -99,7 +130,7 @@ agent.on('agent/connected', (payload) => {
     agentMetrics.set(uuid, {});
   }
 
-  renderData(agents, agentMetrics);
+  renderData();
 });
 
 agent.on('agent/disconnected', (payload) => {
@@ -109,7 +140,7 @@ agent.on('agent/disconnected', (payload) => {
     agentMetrics.delete(uuid);
   }
 
-  renderData(agents, agentMetrics);
+  renderData();
 });
 
 agent.on('agent/message', (payload) => {
@@ -125,7 +156,7 @@ agent.on('agent/message', (payload) => {
   payload.metrics.forEach((m) => {
     const { type, value } = m;
 
-    !Array.isArray(m) ? metrics[type] = [] : '';
+    !Array.isArray(metrics[type]) ? metrics[type] = [] : '';
 
     const actuaLength = metrics[type].length;
     actuaLength >= 20 ? metrics[type].shift() : '';
@@ -136,7 +167,23 @@ agent.on('agent/message', (payload) => {
     });
   });
 
-  renderData(agents, agentMetrics);
+  renderData();
+});
+
+// eslint-disable-next-line consistent-return
+tree.on('select', (node) => {
+  const { uuid } = node;
+  if (node.agent) {
+    node.extended ? extended.push(uuid) : extended = extended.filter((u) => u !== uuid);
+    selected.type = null;
+    selected.uuid = null;
+    return true;
+  }
+
+  selected.uuid = uuid;
+  selected.type = node.type;
+
+  renderMetric();
 });
 /**************************************/
 /**************************************/
